@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/postIdEditTextID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter postId whose data you want to show"
+        android:textColor="#6E6D6D"
+        android:textSize="17sp"
+        android:fontFamily="sans-serif"
+        android:layout_marginTop="50dp"
+        android:inputType="number"/>
+
+    <Button
+        android:id="@+id/enterButonID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter"
+        android:layout_gravity="center"
+        android:background="#A3DA9E"
+        android:textSize="22sp"
+        android:textAllCaps="false"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:onClick="enterButtonMethod"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/outputTextId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textAllCaps="false"/>
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>
