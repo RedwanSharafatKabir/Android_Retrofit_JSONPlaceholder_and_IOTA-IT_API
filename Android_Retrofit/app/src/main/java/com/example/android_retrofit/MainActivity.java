@@ -2,9 +2,11 @@ package com.example.android_retrofit;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,6 +14,8 @@ import com.google.gson.GsonBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +32,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int postIdInput;
+    private int postIdInput, i, j;
     private EditText editText;
     private TextView textView;
     private String rootUrl = "https://jsonplaceholder.typicode.com/";
+    private String iotaitUrl = "https://api.jsonbin.io/";
     private JsonPlaceHolderApi jsonPlaceHolderApi;
+    private Double interestRateArray[];
+    private Double descendingInterestRate[] = new Double[6];
+    private int arrayLength = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +74,67 @@ public class MainActivity extends AppCompatActivity {
 
         // Retrofit Interface
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(rootUrl)
+//                .baseUrl(rootUrl)
+                .baseUrl(iotaitUrl)
                 .addConverterFactory(GsonConverterFactory.create())
 //                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(okHttpClient)
                 .build();
 
         jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
+        getIotaItTestApiData();
+    }
+
+    public void getIotaItTestApiData(){
+        Call<IotaItTestApiList> call = jsonPlaceHolderApi.getTestData();
+        call.enqueue(new Callback<IotaItTestApiList>() {
+            @Override
+            public void onResponse(Call<IotaItTestApiList> call, Response<IotaItTestApiList> response) {
+                if(!response.isSuccessful()){
+                    textView.setText("Code: " + response.code());
+                    return;
+                }
+
+                List<IotaItTestAPI> dataList = response.body().getData();
+                for (IotaItTestAPI iotaItTestAPI : dataList) {
+                    arrayLength++;
+                }
+
+                interestRateArray = new Double[arrayLength];
+                descendingInterestRate = new Double[arrayLength];
+                i=0;
+                for (IotaItTestAPI iotaItTestAPI : dataList) {
+                    interestRateArray[i] = iotaItTestAPI.getInterestRate();
+                    i++;
+                }
+
+                j=0;
+                Arrays.sort(interestRateArray);
+                for (i = interestRateArray.length - 1; i >= 0; i--) {
+                    descendingInterestRate[j] = interestRateArray[i];
+                    j++;
+                }
+
+                textView.append("Descending order :\n-----------------------------\n\n");
+                for(j=0; j<descendingInterestRate.length; j++) {
+                    for (IotaItTestAPI iotaItTestAPI : dataList) {
+                        if (iotaItTestAPI.getInterestRate() == descendingInterestRate[j]) {
+                            String content = "";
+                            content += "Name: " + iotaItTestAPI.getName() + "\n";
+                            content += "Principle amount: " + iotaItTestAPI.getPrincipalAmount() + "\n";
+                            content += "Interest rate: " + iotaItTestAPI.getInterestRate() + "\n";
+                            content += "Tenure in month: " + iotaItTestAPI.getTenureInMonth() + "\n\n";
+                            textView.append(content);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<IotaItTestApiList> call, Throwable t) {
+                Log.d("Response failure ", t.getMessage());
+            }
+        });
     }
 
     public void enterButtonMethod(View view){
@@ -90,22 +152,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getElementsOfPost(int postIdInput){
-        Map<String, String> paramaters = new HashMap<>();
-        paramaters.put("userId", Integer.toString(postIdInput));
-        paramaters.put("_sort", "id");
-        paramaters.put("_order", "desc");
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("userId", Integer.toString(postIdInput));
+        parameters.put("_sort", "id");
+        parameters.put("_order", "desc");
 
         // getPosts() method from "Post" model class
         // show data in descending order according to id sort
-//        Call<List<Post>> call = jsonPlaceHolderApi.getPosts(postIdInput, "id", "desc");
-//        Call<List<Post>> call = jsonPlaceHolderApi.getPosts(postIdInput, new Integer[]{2,6,40}, null, null);
-        Call<List<Post>> call = jsonPlaceHolderApi.getPosts(paramaters);
+        Call<List<Post>> call = jsonPlaceHolderApi.getPosts("id", "desc");
+//        Call<List<Post>> call = jsonPlaceHolderApi.getPosts(new Integer[]{2,6,40}, null, null);
+//        Call<List<Post>> call = jsonPlaceHolderApi.getPosts(parameters);
         // call.execute() method টি main thread এ ব্যবহার করা যাবে না, কারণ app ফ্রিজ হয়ে Exception থ্রো করবে
         call.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if(!response.isSuccessful()){
-                    textView.setText("code: " + response.code());
+                    textView.setText("Code: " + response.code());
                     return;
                 }
                 

@@ -25,13 +25,15 @@ public interface JsonPlaceHolderApi {
     // এখানে MainActivity class এর postIdInput integer value অনুসারে userId এর value change হবে
     // এবং postIdInput অনুসারে Data(ডেটা) show করবে
     @GET("posts")
-    Call<List<Post>> getPosts(@Query("userId") Integer userId,
-                              @Query("userId") Integer[] userId2,
-                              @Query("_sort") String sort,
-                              @Query("_order") String order);
+    Call<List<Post>> getPosts(
+//            @Query("userId") Integer userId,
+//            @Query("userId") Integer[] userId2,
+            @Query("_sort") String sort,
+            @Query("_order") String order
+    );
     
     @GET("posts")
-    Call<List<Post>> getPosts(@QueryMap Map<String, String> paramaters);
+    Call<List<Post>> getPosts(@QueryMap Map<String, String> parameters);
 
     // এখানে MainActivity class এর postIdInput integer value অনুসারে idNumber এর value change হবে
     // এবং postIdInput অনুসারে Data(ডেটা) show করবে
@@ -40,6 +42,10 @@ public interface JsonPlaceHolderApi {
 
     @GET
     Call<List<Comment>> getComments(@Url String url);
+
+    // GET request for IotaIt test
+    @GET("b/5fd2b33281ec296ae71c5fd1")
+    Call<IotaItTestApiList> getTestData();
 
     // POST
     @POST("posts")
