@@ -1,1 +1,1 @@
-# Android_Retrofit_Using_Demo_API
+# Android Retrofit using JSONPlaceholder API
